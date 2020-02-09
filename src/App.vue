@@ -1,8 +1,10 @@
 <template>
   <div id="app">
     <v-app id="inspire">
-      <router-view />
-      <notifications group="notify" />
+      <v-content>
+        <router-view />
+      </v-content>
+      <!-- <notifications group="notify" /> -->
     </v-app>
   </div>
 </template>
