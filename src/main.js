@@ -3,8 +3,10 @@ import App from "./App.vue";
 import router from "./router";
 import vuetify from "./plugins/vuetify";
 import "material-design-icons-iconfont/dist/material-design-icons.css";
+import axios from "axios";
 
 Vue.config.productionTip = false;
+axios.defaults.baseURL = "http://localhost:3000";
 
 new Vue({
   router,

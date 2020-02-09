@@ -3,7 +3,9 @@
 // import HelloWorld from "@/components/HelloWorld.vue";
 import { validationMixin } from "vuelidate";
 import { required } from "vuelidate/lib/validators";
-import { complexPassword } from "../helpers/complexPassword";
+// import { complexPassword } from "../helpers/complexPassword";
+import axios from "axios";
+
 export default {
   name: "Login",
   components: {
@@ -18,33 +20,30 @@ export default {
   },
   methods: {
     async submit() {
-      // const {
-      //   EmailOrPhone,
-      //   Password,
-      //   AuthenticationCode,
-      //   SmsMobileKey,
-      //   LanguageCode
-      // } = this;
+      const { password, username } = this;
 
-      // let login = {
-      //   EmailOrPhone,
-      //   Password,
-      //   AuthenticationCode,
-      //   SmsMobileKey,
-      //   LanguageCode
-      // };
+      let login = {
+        password,
+        username
+      };
       this.$v.$touch();
 
       if (!this.$v.$invalid) {
         this.loading = true;
+        const response = await axios.post("/login", login);
+
+        this.$router.push({
+          name: "exchange"
+        });
+        console.log("TCL: submit -> response", response);
       }
     }
   },
   validations: {
     username: { required },
     password: {
-      required,
-      complexPassword
+      required
+      // complexPassword
     }
   },
   computed: {
@@ -59,9 +58,9 @@ export default {
       const errors = [];
       if (!this.$v.password.$dirty) return errors;
       !this.$v.password.required && errors.push("Password is required.");
-      !this.$v.password.complexPassword &&
-        errors.push(`Passwords must, include one increasing straight of at least three letters, like ‘abc’, ‘cde’, ‘fgh’, include at least two non-overlapping pairs of letters, like aa,
-bb, or cc,  may not include the letters 'i', 'O', or 'l'.`);
+      //       !this.$v.password.complexPassword &&
+      //         errors.push(`Passwords must, include one increasing straight of at least three letters, like ‘abc’, ‘cde’, ‘fgh’, include at least two non-overlapping pairs of letters, like aa,
+      // bb, or cc,  may not include the letters 'i', 'O', or 'l'.`);
       return errors;
     }
   },
