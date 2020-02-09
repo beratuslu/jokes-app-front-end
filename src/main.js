@@ -4,10 +4,12 @@ import router from "./router";
 import vuetify from "./plugins/vuetify";
 import "material-design-icons-iconfont/dist/material-design-icons.css";
 import axios from "axios";
+import Notifications from "vue-notification";
 
 Vue.config.productionTip = false;
 axios.defaults.baseURL = "http://localhost:3000";
 
+Vue.use(Notifications);
 new Vue({
   router,
   vuetify,

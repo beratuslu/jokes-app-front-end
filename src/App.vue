@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <router-view />
+    <v-app id="inspire">
+      <router-view />
+      <notifications group="notify" />
+    </v-app>
   </div>
 </template>
 

@@ -15,7 +15,8 @@ export default {
   data() {
     return {
       username: "",
-      password: ""
+      password: "",
+      loading: false
     };
   },
   methods: {
@@ -30,12 +31,27 @@ export default {
 
       if (!this.$v.$invalid) {
         this.loading = true;
-        const response = await axios.post("/login", login);
+        try {
+          const response = await axios.post("/login", login);
 
-        this.$router.push({
-          name: "exchange"
-        });
-        console.log("TCL: submit -> response", response);
+          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("user", response.data.user);
+
+          this.$router.push({
+            name: "Jokes"
+          });
+        } catch (error) {
+          console.log("hata var: ", error.response);
+
+          this.$notify({
+            group: "notify",
+            text: error.response.data.err,
+            position: "top right",
+            type: "error"
+          });
+        } finally {
+          this.loading = false;
+        }
       }
     }
   },
@@ -68,46 +84,46 @@ export default {
 };
 </script>
 <template>
-  <v-app id="inspire">
-    <v-content>
-      <v-container fluid fill-height>
-        <v-layout align-center justify-center>
-          <v-flex xs12 sm8 md4>
-            <v-card class="elevation-12">
-              <v-toolbar color="primary" dark flat>
-                <v-toolbar-title>Login</v-toolbar-title>
-              </v-toolbar>
-              <v-card-text>
-                <v-form>
-                  <v-text-field
-                    label="Username"
-                    name="login"
-                    prepend-icon="person"
-                    type="text"
-                    placeholder="Username"
-                    v-model="username"
-                    :error-messages="usernameErrors"
-                  ></v-text-field>
+  <v-content>
+    <v-container fluid fill-height>
+      <v-layout align-center justify-center>
+        <v-flex xs12 sm8 md4>
+          <v-card class="elevation-12">
+            <v-toolbar color="primary" dark flat>
+              <v-toolbar-title>Login</v-toolbar-title>
+            </v-toolbar>
+            <v-card-text>
+              <v-form>
+                <v-text-field
+                  label="Username"
+                  name="login"
+                  prepend-icon="person"
+                  type="text"
+                  placeholder="Username"
+                  v-model="username"
+                  :error-messages="usernameErrors"
+                ></v-text-field>
 
-                  <v-text-field
-                    id="password"
-                    label="Password"
-                    name="password"
-                    prepend-icon="lock"
-                    placeholder="Password"
-                    v-model="password"
-                    :error-messages="passwordErrors"
-                  ></v-text-field>
-                </v-form>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn @click="submit()" color="primary">Login</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-content>
-  </v-app>
+                <v-text-field
+                  id="password"
+                  label="Password"
+                  name="password"
+                  prepend-icon="lock"
+                  placeholder="Password"
+                  v-model="password"
+                  :error-messages="passwordErrors"
+                ></v-text-field>
+              </v-form>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn :loading="loading" @click="submit()" color="primary"
+                >Login</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </v-content>
 </template>
