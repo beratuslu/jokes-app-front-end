@@ -1,0 +1,114 @@
+<script>
+// @ is an alias to /src
+// import HelloWorld from "@/components/HelloWorld.vue";
+import { validationMixin } from "vuelidate";
+import { required } from "vuelidate/lib/validators";
+import { complexPassword } from "../helpers/complexPassword";
+export default {
+  name: "Login",
+  components: {
+    // HelloWorld
+  },
+  mixins: [validationMixin],
+  data() {
+    return {
+      username: "",
+      password: ""
+    };
+  },
+  methods: {
+    async submit() {
+      // const {
+      //   EmailOrPhone,
+      //   Password,
+      //   AuthenticationCode,
+      //   SmsMobileKey,
+      //   LanguageCode
+      // } = this;
+
+      // let login = {
+      //   EmailOrPhone,
+      //   Password,
+      //   AuthenticationCode,
+      //   SmsMobileKey,
+      //   LanguageCode
+      // };
+      this.$v.$touch();
+
+      if (!this.$v.$invalid) {
+        this.loading = true;
+      }
+    }
+  },
+  validations: {
+    username: { required },
+    password: {
+      required,
+      complexPassword
+    }
+  },
+  computed: {
+    usernameErrors() {
+      const errors = [];
+      if (!this.$v.username.$dirty) return errors;
+      !this.$v.username.required && errors.push("Username is required.");
+
+      return errors;
+    },
+    passwordErrors() {
+      const errors = [];
+      if (!this.$v.password.$dirty) return errors;
+      !this.$v.password.required && errors.push("Password is required.");
+      !this.$v.password.complexPassword &&
+        errors.push(`Passwords must, include one increasing straight of at least three letters, like ‘abc’, ‘cde’, ‘fgh’, include at least two non-overlapping pairs of letters, like aa,
+bb, or cc,  may not include the letters 'i', 'O', or 'l'.`);
+      return errors;
+    }
+  },
+  created() {}
+};
+</script>
+<template>
+  <v-app id="inspire">
+    <v-content>
+      <v-container fluid fill-height>
+        <v-layout align-center justify-center>
+          <v-flex xs12 sm8 md4>
+            <v-card class="elevation-12">
+              <v-toolbar color="primary" dark flat>
+                <v-toolbar-title>Login</v-toolbar-title>
+              </v-toolbar>
+              <v-card-text>
+                <v-form>
+                  <v-text-field
+                    label="Username"
+                    name="login"
+                    prepend-icon="person"
+                    type="text"
+                    placeholder="Username"
+                    v-model="username"
+                    :error-messages="usernameErrors"
+                  ></v-text-field>
+
+                  <v-text-field
+                    id="password"
+                    label="Password"
+                    name="password"
+                    prepend-icon="lock"
+                    placeholder="Password"
+                    v-model="password"
+                    :error-messages="passwordErrors"
+                  ></v-text-field>
+                </v-form>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn @click="submit()" color="primary">Login</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+  </v-app>
+</template>
