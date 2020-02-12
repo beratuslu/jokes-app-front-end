@@ -36,6 +36,9 @@ export default {
 
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("user", response.data.user);
+          axios.defaults.headers.common = {
+            Authorization: `Bearer ${response.data.token}`
+          };
 
           this.$router.push({
             name: "Jokes"
