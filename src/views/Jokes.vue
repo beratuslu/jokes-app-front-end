@@ -150,8 +150,10 @@ export default {
     <v-row align="start" justify="center">
       <v-col md="6" xs="12">
         <v-card class="mx-auto">
-          <v-toolbar color="cyan" dark>
-            <v-toolbar-title>Jokes</v-toolbar-title>
+          <v-toolbar color="yellow" dark>
+            <v-toolbar-title>
+              <span class="black--tex"> Jokes</span></v-toolbar-title
+            >
 
             <v-spacer></v-spacer>
           </v-toolbar>

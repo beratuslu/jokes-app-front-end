@@ -41,11 +41,9 @@ export default {
             name: "Jokes"
           });
         } catch (error) {
-          console.log("hata var: ", error.response);
-
           this.$notify({
             group: "notify",
-            text: error.response.data.err,
+            text: error.response.data.err || error.message,
             position: "top right",
             type: "error"
           });
@@ -116,9 +114,7 @@ export default {
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn :loading="loading" @click="submit()" color="primary"
-              >Login</v-btn
-            >
+            <v-btn :loading="loading" @click="submit()" color="primary">Login</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
