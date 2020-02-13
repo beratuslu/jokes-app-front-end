@@ -1,30 +1,23 @@
 # jokes-app-front-end
 
+### First Setup and Run "FrontMen/Frontmen-Applicant-Boilerplate-V1"
+
+## Clone Project
+
+```
+git clone https://github.com/beratuslu/jokes-app-front-end.git
+```
+
 ## Project setup
+
 ```
 yarn install
 ```
 
 ### Compiles and hot-reloads for development
+
 ```
 yarn run serve
 ```
 
-### Compiles and minifies for production
-```
-yarn run build
-```
-
-### Run your tests
-```
-yarn run test
-```
-
-### Lints and fixes files
-```
-yarn run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
 # jokes-app-front-end
