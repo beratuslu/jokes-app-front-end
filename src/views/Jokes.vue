@@ -9,44 +9,26 @@ export default {
   },
   data() {
     return {
-      jokes: [
-        {
-          id: 1,
-          joke:
-            "When Chuck Norris plays Oregon Trail, his family does not die from cholera or dysentery, but rather, roundhouse kicks to the face. He also requires no wagon, since he carries the oxen, axels, and buffalo meat on his back. He always makes it to Oregon before you."
-        }
-      ],
-      items2: [
-        {
-          action: "15 min",
-          headline: "Brunch this weekend?",
-          title: "Ali Connors",
-          subtitle:
-            "I'll be in your neighborhood doing errands this weekend. Do you want to hang out?"
-        }
-      ]
+      jokes: [],
+      favorites: [],
+      timer: false,
+      timerEnabled: true
     };
   },
   methods: {
-    async setJokeFavorite(joke) {
+    async deleteFavoriteJoke(jokeId) {
       this.loading = true;
       try {
-        const response = await axios.post(
-          "/api/v1/jokes/set-favorite-joke",
-          joke
-        );
-        console.log("TCL: setJokeFavorite -> response", response);
+        await axios.delete(`/api/v1/jokes/delete-favorite-joke/${jokeId}`);
 
         this.$notify({
           group: "notify",
-          text: "Joke set as favorite successfully!",
+          text: "Joke deleted successfully!",
           position: "top right",
           type: "success"
         });
-        //this.getFavorites()
+        this.getFavoriteJokes();
       } catch (error) {
-        console.log("hata var: ", error.response);
-
         this.$notify({
           group: "notify",
           text: error.response.data.err || error.message,
@@ -57,6 +39,39 @@ export default {
         this.loading = false;
       }
     },
+    async setJokeFavorite(joke) {
+      if (this.favorites.length === 10) {
+        this.$notify({
+          group: "notify",
+          text: "You have already 10 favorites set.",
+          position: "top right",
+          type: "error"
+        });
+        return;
+      }
+      try {
+        await axios.post("/api/v1/jokes/set-favorite-joke", joke);
+
+        this.$notify({
+          group: "notify",
+          text: "Joke set as favorite successfully!",
+          position: "top right",
+          type: "success"
+        });
+
+        this.jokes = this.jokes.filter(function(item) {
+          return item.id !== joke.id;
+        });
+        this.getFavoriteJokes();
+      } catch (error) {
+        this.$notify({
+          group: "notify",
+          text: error.response.data.err || error.message,
+          position: "top right",
+          type: "error"
+        });
+      }
+    },
     async getFavoriteJokes(joke) {
       this.loading = true;
       try {
@@ -64,18 +79,8 @@ export default {
           "/api/v1/jokes/get-favorite-jokes",
           joke
         );
-        console.log("TCL: setJokeFavorite -> response", response);
-
-        // this.$notify({
-        //   group: "notify",
-        //   text: "Joke set as favorite successfully!",
-        //   position: "top right",
-        //   type: "success"
-        // });
-        //this.getFavorites()
+        this.favorites = response.data.jokes;
       } catch (error) {
-        console.log("hata var: ", error.response);
-
         this.$notify({
           group: "notify",
           text: error.response.data.err || error.message,
@@ -102,8 +107,13 @@ export default {
         this.loading = false;
       }
     },
-    next() {
-      console.log("click");
+    logout() {
+      localStorage.setItem("token", null);
+      localStorage.setItem("user", null);
+
+      this.$router.push({
+        name: "Login"
+      });
     }
   },
 
@@ -120,20 +130,30 @@ export default {
     }
     this.getFavoriteJokes();
     this.getSingleJoke();
+    this.time = setInterval(() => {
+      if (this.timerEnabled && this.jokes.length < 10) {
+        this.getSingleJoke();
+      }
+    }, 1000);
   }
 };
 </script>
 <template>
-  <v-container fluid fill-height>
-    <v-row align="start" justify="center">
+  <v-container fluid>
+    <v-row>
       <v-col md="6" xs="12">
         <v-card class="mx-auto">
-          <v-toolbar color="yellow" dark>
-            <v-toolbar-title>
-              <span class="black--text">Jokes</span>
-            </v-toolbar-title>
+          <v-toolbar color="yellow">
+            <v-toolbar-title class="black--text">Jokes</v-toolbar-title>
 
             <v-spacer></v-spacer>
+
+            <div>
+              <v-switch hide-details v-model="timerEnabled" label="5 sec. auto-load" />
+            </div>
+            <v-btn @click="logout()" icon>
+              <v-icon>mdi-logout</v-icon>
+            </v-btn>
           </v-toolbar>
 
           <div class="list">
@@ -156,27 +176,15 @@ export default {
             <v-spacer></v-spacer>
           </v-toolbar>
 
-          <!-- <v-list two-line>
-            <v-list-item-group>
-              <template v-for="(item, index) in items2">
-                <v-list-item :key="item.title">
-                  <template v-slot:default="{}">
-                    <v-list-item-content>
-                      <v-list-item-title v-text="item.title"></v-list-item-title>
-                      <v-list-item-subtitle class="text--primary" v-text="item.headline"></v-list-item-subtitle>
-                      <v-list-item-subtitle v-text="item.subtitle"></v-list-item-subtitle>
-                    </v-list-item-content>
-
-                    <v-list-item-action>
-                      <v-icon color="yellow">star</v-icon>
-                    </v-list-item-action>
-                  </template>
-                </v-list-item>
-
-                <v-divider v-if="index + 1 < items2.length" :key="index"></v-divider>
-              </template>
-            </v-list-item-group>
-          </v-list>-->
+          <div class="list">
+            <div class="joke" v-for="(item, index) in favorites" :key="item.id">
+              <div class="jokeInner pr-4">
+                <p class="pt-4 pl-4 pr-4">{{item.joke}}</p>
+                <v-icon @click="deleteFavoriteJoke(item.jokeId)" class="pointer" color="red">delete</v-icon>
+              </div>
+              <v-divider v-if="index + 1 < favorites.length" :key="index + 'a'" />
+            </div>
+          </div>
         </v-card>
       </v-col>
     </v-row>

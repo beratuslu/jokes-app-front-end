@@ -3,7 +3,7 @@
 // import HelloWorld from "@/components/HelloWorld.vue";
 import { validationMixin } from "vuelidate";
 import { required } from "vuelidate/lib/validators";
-// import { complexPassword } from "../helpers/complexPassword";
+import { complexPassword } from "../helpers/complexPassword";
 import axios from "axios";
 
 export default {
@@ -14,9 +14,10 @@ export default {
   mixins: [validationMixin],
   data() {
     return {
-      username: "",
-      password: "",
-      loading: false
+      username: "admin",
+      password: "admin",
+      loading: false,
+      enableComplexValidation: false
     };
   },
   methods: {
@@ -56,12 +57,17 @@ export default {
       }
     }
   },
-  validations: {
-    username: { required },
-    password: {
+  validations() {
+    const passwordValidation = {
       required
-      // complexPassword
+    };
+    if (this.enableComplexValidation) {
+      passwordValidation.complexPassword = complexPassword;
     }
+    return {
+      username: { required },
+      password: passwordValidation
+    };
   },
   computed: {
     usernameErrors() {
@@ -75,9 +81,10 @@ export default {
       const errors = [];
       if (!this.$v.password.$dirty) return errors;
       !this.$v.password.required && errors.push("Password is required.");
-      //       !this.$v.password.complexPassword &&
-      //         errors.push(`Passwords must, include one increasing straight of at least three letters, like ‘abc’, ‘cde’, ‘fgh’, include at least two non-overlapping pairs of letters, like aa,
-      // bb, or cc,  may not include the letters 'i', 'O', or 'l'.`);
+      !this.$v.password.complexPassword &&
+        this.enableComplexValidation &&
+        errors.push(`Passwords must, include one increasing straight of at least three letters, like ‘abc’, ‘cde’, ‘fgh’, include at least two non-overlapping pairs of letters, like aa,
+      bb, or cc,  may not include the letters 'i', 'O', or 'l'.`);
       return errors;
     }
   },
@@ -116,6 +123,9 @@ export default {
             </v-form>
           </v-card-text>
           <v-card-actions>
+            <div>
+              <v-switch hide-details v-model="enableComplexValidation" label="Complex validation" />
+            </div>
             <v-spacer></v-spacer>
             <v-btn :loading="loading" @click="submit()" color="primary">Login</v-btn>
           </v-card-actions>
