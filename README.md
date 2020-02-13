@@ -2,6 +2,8 @@
 
 ### First Setup and Run "FrontMen/Frontmen-Applicant-Boilerplate-V1"
 
+See [jokes-app-back-end](https://github.com/beratuslu/jokes-app-back-end).
+
 ## Clone Project
 
 ```
