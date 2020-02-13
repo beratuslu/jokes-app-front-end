@@ -47,7 +47,7 @@ export default {
         } catch (error) {
           this.$notify({
             group: "notify",
-            text: error.response.data.err || error.message,
+            text: error.response ? error.response.data.err : error.message,
             position: "top right",
             type: "error"
           });
