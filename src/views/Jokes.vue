@@ -135,6 +135,9 @@ export default {
         this.getSingleJoke();
       }
     }, 5000);
+  },
+  beforeDestroy() {
+    clearInterval(this.time);
   }
 };
 </script>
