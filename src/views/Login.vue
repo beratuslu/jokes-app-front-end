@@ -36,7 +36,7 @@ export default {
           const response = await axios.post("/login", login);
 
           localStorage.setItem("token", response.data.token);
-          localStorage.setItem("user", response.data.user);
+          localStorage.setItem("user", JSON.stringify(response.data.user));
           axios.defaults.headers.common = {
             Authorization: `Bearer ${response.data.token}`
           };

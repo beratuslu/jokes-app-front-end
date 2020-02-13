@@ -134,7 +134,7 @@ export default {
       if (this.timerEnabled && this.jokes.length < 10) {
         this.getSingleJoke();
       }
-    }, 1000);
+    }, 5000);
   }
 };
 </script>

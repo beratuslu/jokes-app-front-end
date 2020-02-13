@@ -14,9 +14,11 @@ const routes = [
     path: "/jokes",
     name: "Jokes",
     beforeEnter: (to, from, next) => {
-      const token = localStorage.getItem("token");
-      if (token) next();
-      else next("/");
+      if (localStorage.getItem("token") !== "null") {
+        next();
+      } else {
+        next("/");
+      }
     },
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
